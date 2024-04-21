@@ -8,26 +8,37 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+h1 {
+  font-family: var(--font-lalezar);
+}
+
+p {
+  font-family: var(--font-inter);
+}
+
+html{
+  overflow-x: hidden;
+}
+
+/* CSS */
+.relative:hover .absolute {
+  opacity: 1;
+}
+
+.bar-container {
+  width: 100%; /* Set the width of the container */
+  height: 20px; /* Set the height of the container */
+  border-radius: 5px; /* Add border-radius for rounded corners */
+  margin-left: 10px; /* Add some spacing */
+}
+
+.bar {
+  height: 100%; /* Make the bar height same as the container height */
+  border-radius: 5px; /* Add border-radius for rounded corners */
 }
