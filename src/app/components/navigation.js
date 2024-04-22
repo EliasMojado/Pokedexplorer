@@ -25,7 +25,7 @@ const typeColorsMap = {
     fairy: "#D685AD"
 };
 
-export default function Navigation({setSearchFilter}) {
+export default function Navigation({setSearchFilter, setSortType, setTypes}) {
     const [isSticky, setIsSticky] = useState(false);
     const [inputValue, setInputValue] = useState("");
     const [isSortPaneOpen, setIsSortPaneOpen] = useState(false); 
@@ -55,6 +55,14 @@ export default function Navigation({setSearchFilter}) {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+
+    useEffect(() => {
+        setTypes(selectedTypes);
+    }, [selectedTypes]);
+
+    useEffect(() => {
+        setSortType(isNumeric);
+    }, [isNumeric]);
 
     const toggleSortPane = () => {
         setIsSortPaneOpen(!isSortPaneOpen); // Toggle sort pane visibility

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Card from "./card";
 import InfoPane from './infopane';
 
-export default function List({searchFilter}) {
+export default function List({searchFilter, isNumeric, selectedTypes}) {
     const [allPokemonData, setAllPokemonData] = useState([]);
     const [detailedPokemonData, setDetailedPokemonData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -119,20 +119,34 @@ export default function List({searchFilter}) {
         }
     };
 
-    const fetchAllFilteredData = async () => {
-        setIsLoading(true);
-        try {
-            const filteredData = allPokemonData.filter(pokemon =>
-                pokemon.name.toLowerCase().includes(searchFilter.toLowerCase()) || // Check if name matches
-                pokemon.id.toString().includes(searchFilter) // Check if ID matches
+    const applyFilters = () => {
+        // Apply search filter
+        let filteredData = allPokemonData.filter(pokemon =>
+            pokemon.name.toLowerCase().includes(searchFilter.toLowerCase()) || // Check if name matches
+            pokemon.id.toString().includes(searchFilter) // Check if ID matches
+        );
+
+        // Apply type filter
+        if (selectedTypes.length > 0) {
+            const lowercaseSelectedTypes = selectedTypes.map(type => type.toLowerCase());
+            filteredData = filteredData.filter(pokemon =>
+                // Check if the Pokémon's types exactly match the selected types
+                pokemon.types.length === selectedTypes.length &&
+                pokemon.types.every(type => lowercaseSelectedTypes.includes(type.toLowerCase()))
             );
-            setDetailedPokemonData(filteredData);
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Error filtering Pokémon data:', error);
-            setIsLoading(false);
         }
-    };    
+
+        // Apply sorting
+        if (isNumeric) {
+            // Sort by ID
+            filteredData.sort((a, b) => a.id - b.id);
+        } else {
+            // Sort by name
+            filteredData.sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        return filteredData;
+    };
 
     useEffect(() => {
         initialFetch(); 
@@ -143,17 +157,18 @@ export default function List({searchFilter}) {
         setDetailedPokemonData([])
         setPage(1);
 
-        if (searchFilter === "") {
+        if(searchFilter === "" && selectedTypes.length === 0) {
             fetchMoreData();
-        } else { 
-            fetchAllFilteredData();
+        }else{
+            const filteredData = applyFilters();
+            setDetailedPokemonData(filteredData);
         }
-    }, [searchFilter]);
+    }, [searchFilter, selectedTypes, isNumeric]);
 
     useEffect(() => {
         let timeoutId;
 
-        if (searchFilter !== "") {
+        if (searchFilter !== "" || selectedTypes.length !== 0) {
             return;
         }
 
