@@ -1,6 +1,6 @@
 "use client";
 
-import { HiOutlineFilter, HiSearch } from 'react-icons/hi';
+import { HiOutlineFilter, HiX } from 'react-icons/hi';
 import { useState, useEffect } from 'react';
 import SortPane from './sortpane';
 
@@ -77,6 +77,11 @@ export default function Navigation({setSearchFilter, setSortType, setTypes}) {
         setSearchFilter(event.target.value); // Update searchFilter state in parent component
     };
 
+    const clearInput = () => {
+        setInputValue('');
+        setSearchFilter('');
+    };
+
     return (
         <div id="navigation-container" className={`${isSticky ? 'bg-white fixed top-0 w-[100vw] z-50' : ''}`}>
 
@@ -113,8 +118,11 @@ export default function Navigation({setSearchFilter, setSortType, setTypes}) {
                         value={inputValue} // Set input value
                         onChange={handleInputChange} // Handle input change
                     />
-                    <button className="px-3 py-2 border border-gray-300 bg-gray-100 rounded-r-md hover:bg-gray-200 focus:outline-none">
-                        <HiSearch size={20} /> 
+                    <button
+                        className="px-3 py-2 border border-gray-300 bg-gray-100 rounded-r-md hover:bg-gray-200 focus:outline-none"
+                        onClick={clearInput} // Call clearInput function on button click
+                    >
+                        <HiX size={20} /> {/* Use an appropriate close icon */}
                     </button>
                 </div>
             </div>

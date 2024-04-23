@@ -10,6 +10,7 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
     const [page, setPage] = useState(1);
     const [isSticky, setIsSticky] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
+    const [loadMore, setLoadMore] = useState(false);
 
     const toggleInfoPane = (pokemon) => {
         setSelectedCard(pokemon)
@@ -95,9 +96,9 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
                 };
             }));;
 
-            setDetailedPokemonData(prevData => [...prevData, ...newPokemonData]); // Merge with existing data
+            setDetailedPokemonData(newPokemonData);
             setIsLoading(false);
-            setPage(page + 1); // Increment page number
+            setPage(page + 1);
         } catch (error) {
             console.error('Error fetching data:', error);
             setIsLoading(false);
@@ -107,10 +108,11 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
     const fetchMoreData = async () => {
         setIsLoading(true);
         try {
+            setDetailedPokemonData([]);
             const startIndex = (page - 1) * 10;
             const endIndex = startIndex + 10;
-            const newData = allPokemonData.slice(startIndex, endIndex);
-            setDetailedPokemonData(prevData => [...prevData, ...newData]); // Merge with existing data
+            const newData = allPokemonData.slice(0, endIndex);
+            setDetailedPokemonData(newData);
             setIsLoading(false);
             setPage(page + 1); // Increment page number
         } catch (error) {
@@ -149,21 +151,29 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
     };
 
     useEffect(() => {
-        initialFetch(); 
+        initialFetch();
         fetchAllPokemonData();
     }, []);
 
     useEffect(() => {
-        setDetailedPokemonData([])
-        setPage(1);
-
-        if(searchFilter === "" && selectedTypes.length === 0) {
+        setPage(1); // Reset the page number when searchFilter or selectedTypes change
+        setDetailedPokemonData([]);
+    
+        if (searchFilter === "" && selectedTypes.length === 0) {
+            if (isNumeric) {
+                // sort by ID
+                setAllPokemonData(allPokemonData.sort((a, b) => a.id - b.id));
+            } else {
+                // sort by name
+                setAllPokemonData(allPokemonData.sort((a, b) => a.name.localeCompare(b.name)));
+            }
             fetchMoreData();
-        }else{
+        } else {
             const filteredData = applyFilters();
             setDetailedPokemonData(filteredData);
         }
     }, [searchFilter, selectedTypes, isNumeric]);
+    
 
     useEffect(() => {
         let timeoutId;
@@ -182,7 +192,7 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
                 clearTimeout(timeoutId);
                 timeoutId = setTimeout(() => {
                     fetchMoreData();
-                }, 100);
+                }, 500);
             }
         };
 
@@ -217,6 +227,11 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         };
     }, []);
 
+    const handleLoadMore = () => {
+        setLoadMore(true);
+        fetchMoreData();
+    };
+
     return (
         <div>
             {selectedCard && <InfoPane togglePane={closeInfoPane} content={selectedCard} setContent={setContent} />}
@@ -237,7 +252,13 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
                 </div>
             </div>
 
-            {searchFilter === "" && page <= 102 && (
+            {!loadMore && (
+                <div className='flex flex-row justify-center items-center my-[5vh] h-[5vh] mx-[10vw]'>
+                    <button onClick={handleLoadMore} className='w-[10vw] h-full rounded-full bg-red-500'>Load more?</button>
+                </div>
+            )}
+
+            {searchFilter === "" && loadMore && page <= 102 && (
                 <div id="loading" className='flex flex-row justify-center items-center mt-[5vh] h-[5vh] mx-[10vw]'>
                     <div role="status" className='pt-2'>
                         <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
