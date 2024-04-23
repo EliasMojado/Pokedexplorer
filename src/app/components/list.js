@@ -54,38 +54,84 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         }
     };
 
-    // Function to fetch all Pokémon data
+    // // Function to fetch all Pokémon data
+    // const fetchAllPokemonData = async () => {
+    //     setIsLoading(true);
+    //     try {
+    //         // Fetch all Pokémon data from the API
+    //         // 1025 because it's the max number of Pokémon in the API that has photo 
+    //         const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0`);
+    //         if (!response.ok) {
+    //             throw new Error('Failed to fetch Pokémon data');
+    //         }
+    //         const data = await response.json();
+    //         // Process the fetched data and update state
+    //         const newPokemonData = await Promise.all(data.results.map(async ({ name, url }) => {
+    //             const pokemonResponse = await fetch(url);
+    //             if (!pokemonResponse.ok) {
+    //                 throw new Error('Failed to fetch detailed data for ' + name);
+    //             }
+    //             const pokemonData = await pokemonResponse.json();
+    //             return {
+    //                 id: pokemonData.id,
+    //                 name: pokemonData.name,
+    //                 photo: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${String(pokemonData.id).padStart(3, '0')}.png`,
+    //                 types: pokemonData.types.map(type => type.type.name),
+    //             };
+    //         }));
+    //         setAllPokemonData(newPokemonData);
+    //         setIsLoading(false);
+    //     } catch (error) {
+    //         console.error('Error fetching Pokémon data:', error);
+    //         setIsLoading(false);
+    //     }
+    // };
+
+    // Function to fetch all Pokémon data with retry mechanism
     const fetchAllPokemonData = async () => {
         setIsLoading(true);
-        try {
-            // Fetch all Pokémon data from the API
-            // 1025 because it's the max number of Pokémon in the API that has photo 
-            const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch Pokémon data');
-            }
-            const data = await response.json();
-            // Process the fetched data and update state
-            const newPokemonData = await Promise.all(data.results.map(async ({ name, url }) => {
-                const pokemonResponse = await fetch(url);
-                if (!pokemonResponse.ok) {
-                    throw new Error('Failed to fetch detailed data for ' + name);
+        const MAX_RETRIES = 5; // Maximum number of retry attempts
+        const RETRY_DELAY = 1000; // Delay between retry attempts in milliseconds
+        let retries = 0;
+
+        while (retries < MAX_RETRIES) {
+            try {
+                // Fetch all Pokémon data from the API
+                // 1025 because it's the max number of Pokémon in the API that has a photo
+                const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch Pokémon data');
                 }
-                const pokemonData = await pokemonResponse.json();
-                return {
-                    id: pokemonData.id,
-                    name: pokemonData.name,
-                    photo: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${String(pokemonData.id).padStart(3, '0')}.png`,
-                    types: pokemonData.types.map(type => type.type.name),
-                };
-            }));
-            setAllPokemonData(newPokemonData);
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Error fetching Pokémon data:', error);
-            setIsLoading(false);
+                const data = await response.json();
+                // Process the fetched data and update state
+                const newPokemonData = await Promise.all(data.results.map(async ({ name, url }) => {
+                    const pokemonResponse = await fetch(url);
+                    if (!pokemonResponse.ok) {
+                        throw new Error('Failed to fetch detailed data for ' + name);
+                    }
+                    const pokemonData = await pokemonResponse.json();
+                    return {
+                        id: pokemonData.id,
+                        name: pokemonData.name,
+                        photo: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${String(pokemonData.id).padStart(3, '0')}.png`,
+                        types: pokemonData.types.map(type => type.type.name),
+                    };
+                }));
+                setAllPokemonData(newPokemonData);
+                setIsLoading(false);
+                return; // Exit the function if data is fetched successfully
+            } catch (error) {
+                console.error(`Error fetching Pokémon data (attempt ${retries + 1}):`, error);
+                retries++;
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY)); // Wait before retrying
+            }
         }
+
+        // If all retry attempts fail, log an error and update loading state
+        console.error('Failed to fetch Pokémon data after maximum retries');
+        setIsLoading(false);
     };
+
 
     // Function to initially fetch Pokémon data
     const initialFetch = async () => {
@@ -125,8 +171,7 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
     // Function to fetch more Pokémon data
     // This function is called when the user scrolls to the bottom of the page
     // not really fetching more data, just slicing the data from allPokemonData
-    const fetchMoreData = async () => {
-        console.log("this gets called: ", page);
+    const fetchMoreData = () => {
         setIsLoading(true);
         try {
             setDetailedPokemonData([]);
