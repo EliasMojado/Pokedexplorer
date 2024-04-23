@@ -34,7 +34,7 @@ export default function Navigation({setSearchFilter, setSortType, setTypes}) {
 
     useEffect(() => {
         const handleScroll = () => {
-            const header = document.getElementById('HEADER'); // Replace 'HEADER' with the actual tag or class name of your header component
+            const header = document.getElementById('HEADER');
             if (!header) {
                 console.error('Header element not found');
                 return;
@@ -65,7 +65,7 @@ export default function Navigation({setSearchFilter, setSortType, setTypes}) {
     }, [isNumeric]);
 
     const toggleSortPane = () => {
-        setIsSortPaneOpen(!isSortPaneOpen); // Toggle sort pane visibility
+        setIsSortPaneOpen(!isSortPaneOpen);
     };
 
     const removeType = (typeToRemove) => {
@@ -73,8 +73,8 @@ export default function Navigation({setSearchFilter, setSortType, setTypes}) {
     };    
 
     const handleInputChange = (event) => {
-        setInputValue(event.target.value); // Update input value state
-        setSearchFilter(event.target.value); // Update searchFilter state in parent component
+        setInputValue(event.target.value);
+        setSearchFilter(event.target.value);
     };
 
     const clearInput = () => {
@@ -115,14 +115,14 @@ export default function Navigation({setSearchFilter, setSortType, setTypes}) {
                         type="text"
                         placeholder="Search by name"
                         className="px-4 py-2 border w-[20vw] border-gray-300 rounded-l-md focus:outline-none focus:border-blue-500"
-                        value={inputValue} // Set input value
-                        onChange={handleInputChange} // Handle input change
+                        value={inputValue}
+                        onChange={handleInputChange}
                     />
                     <button
                         className="px-3 py-2 border border-gray-300 bg-gray-100 rounded-r-md hover:bg-gray-200 focus:outline-none"
-                        onClick={clearInput} // Call clearInput function on button click
+                        onClick={clearInput}
                     >
-                        <HiX size={20} /> {/* Use an appropriate close icon */}
+                        <HiX size={20} />
                     </button>
                 </div>
             </div>

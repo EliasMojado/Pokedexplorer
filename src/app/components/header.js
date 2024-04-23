@@ -9,7 +9,7 @@ export default function Header(){
     useEffect(() => {
         const timeout = setTimeout(() => {
             setAnimate(true);
-        }, 2000);
+        }, 100);
 
         return () => clearTimeout(timeout);
     }, []);
@@ -44,7 +44,7 @@ export default function Header(){
             <div className="absolute z-10 flex flex-col pl-[35vw] justify-center h-full">
             <div className="flex flex-row items-center pb-[5vh]">
                 <h1 className="lalezar text-4xl font-bold text-[#333333] pr-[2vw]">Pokédexplorer</h1>
-                <a href="https://github.com/EliasMojado" target="_blank" rel="noopener noreferrer" className="cursor-pointer">
+                <a href="https://github.com/EliasMojado/Pokedexplorer" target="_blank" rel="noopener noreferrer" className="cursor-pointer">
                     <Image src="/GitHub.svg" width={100} height={100} alt="github logo" className="h-[3rem]" />
                 </a>
             </div>

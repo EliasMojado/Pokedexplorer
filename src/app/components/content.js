@@ -9,13 +9,6 @@ export default function Content() {
     const [isNumeric, setIsNumeric] = useState(true);
     const [selectedTypes, setSelectedTypes] = useState([]);
 
-
-
-    useEffect(() =>{
-        
-        
-    }, [searchFilter]);
-
     return (
         <div>
             <Navigation setSearchFilter={setSearchFilter} setSortType={setIsNumeric} setTypes={setSelectedTypes}/> 

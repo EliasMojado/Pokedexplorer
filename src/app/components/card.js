@@ -1,29 +1,8 @@
 import { useState, useEffect } from 'react';
-
-const typeColorsMap = {
-    normal: "#A8A77A",
-    fire: "#EE8130",
-    water: "#6390F0",
-    electric: "#F7D02C",
-    grass: "#7AC74C",
-    ice: "#96D9D6",
-    fighting: "#C22E28",
-    poison: "#A33EA1",
-    ground: "#E2BF65",
-    flying: "#A98FF3",
-    psychic: "#F95587",
-    bug: "#A6B91A",
-    rock: "#B6A136",
-    ghost: "#735797",
-    dragon: "#6F35FC",
-    dark: "#705746",
-    steel: "#B7B7CE",
-    fairy: "#D685AD"
-};
+import { typeColorsMap } from '../constants';
 
 export default function Card({ id_number, name, photo, types, toggleInfoPane}) {
     const [isLoading, setIsLoading] = useState(true);
-    const [backgroundColor, setBackgroundColor] = useState("#EEF2F3");
 
     const handleImageLoad = () => {
         setIsLoading(false);
@@ -31,7 +10,6 @@ export default function Card({ id_number, name, photo, types, toggleInfoPane}) {
 
     useEffect(() => {
         const bgColor = combineColors(types);
-        setBackgroundColor(bgColor);
     
         const typeDiv = document.getElementById(`type-${id_number}`);
         if (typeDiv) {
