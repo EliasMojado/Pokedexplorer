@@ -73,7 +73,7 @@ export default function Card({ id_number, name, photo, types, toggleInfoPane}) {
         if (typeDiv) {
             typeDiv.style.backgroundColor = bgColor;
         }
-    }, [types]);    
+    }, [types, combineColors, id_number]);    
 
     return (
         <div className={`relative flex flex-col items-center w-[15vw] h-[43vh] bg-[#EEF2F3] rounded-xl transition duration-300 ease-in-out transform hover:shadow-lg hover:border-2 hover:border-gray-400`} onClick={() => toggleInfoPane()}>

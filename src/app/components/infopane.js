@@ -333,7 +333,8 @@ export default function InfoPane({ togglePane, content, setContent}) {
 
                             {/* DESCRIPTION */}
                             {isDescriptionLoading ? (
-                                <p className="animate-pulse">Loading Pokemon's Description...</p>
+                                <p className="animate-pulse">Loading Pokemon&apos;s Description...</p>
+
                             ) : (
                                 <p>{description}</p>
                             )}

@@ -56,7 +56,7 @@ export default function Header(){
                 </a>
             </div>
 
-                <p className="inter text-[#333333] w-[40vw]">A simple but complete Pokémon catalog online. Learn about each Pokémon species' traits and abilities. PokedExplorer is your Pokémon resource for beginners and experts.</p>
+                <p className="inter text-[#333333] w-[40vw]">A simple but complete Pokémon catalog online. Learn about each Pokémon species&apos; traits and abilities. PokedExplorer is your Pokémon resource for beginners and experts.</p>
             </div>
             
         </div>
