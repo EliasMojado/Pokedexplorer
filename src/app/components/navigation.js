@@ -2,29 +2,17 @@
 
 import { HiOutlineFilter, HiX } from 'react-icons/hi';
 import { useState, useEffect } from 'react';
+import { typeColorsMap } from '../constants';
 import SortPane from './sortpane';
 
-const typeColorsMap = {
-    normal: "#A8A77A",
-    fire: "#EE8130",
-    water: "#6390F0",
-    electric: "#F7D02C",
-    grass: "#7AC74C",
-    ice: "#96D9D6",
-    fighting: "#C22E28",
-    poison: "#A33EA1",
-    ground: "#E2BF65",
-    flying: "#A98FF3",
-    psychic: "#F95587",
-    bug: "#A6B91A",
-    rock: "#B6A136",
-    ghost: "#735797",
-    dragon: "#6F35FC",
-    dark: "#705746",
-    steel: "#B7B7CE",
-    fairy: "#D685AD"
-};
-
+/**
+ * Component for rendering the navigation bar with search, filter, and sort functionalities.
+ * @param {Object} props - The properties passed to the Navigation component.
+ * @param {Function} props.setSearchFilter - Function to set the search filter.
+ * @param {Function} props.setSortType - Function to set the sorting type (numeric or alphabetical).
+ * @param {Function} props.setTypes - Function to set the selected Pokémon types for filtering.
+ * @returns {JSX.Element} The JSX element representing the Navigation component.
+ */
 export default function Navigation({setSearchFilter, setSortType, setTypes}) {
     const [isSticky, setIsSticky] = useState(false);
     const [inputValue, setInputValue] = useState("");
@@ -32,6 +20,8 @@ export default function Navigation({setSearchFilter, setSortType, setTypes}) {
     const [isNumeric, setIsNumeric] = useState(true);
     const [selectedTypes, setSelectedTypes] = useState([]);
 
+    // Effect to handle sticky behavior of the navigation bar
+    // The navigation bar goes sticky when the header is out of sight.
     useEffect(() => {
         const handleScroll = () => {
             const header = document.getElementById('HEADER');
@@ -56,27 +46,33 @@ export default function Navigation({setSearchFilter, setSortType, setTypes}) {
         };
     }, []);
 
+    // Effect to update the selected types when they change
     useEffect(() => {
         setTypes(selectedTypes);
     }, [selectedTypes]);
 
+    // Effect to update the sorting type when it changes
     useEffect(() => {
         setSortType(isNumeric);
     }, [isNumeric]);
 
+    // Function to toggle the sort pane
     const toggleSortPane = () => {
         setIsSortPaneOpen(!isSortPaneOpen);
     };
 
+    // Function to remove a selected type from the filter
     const removeType = (typeToRemove) => {
         setSelectedTypes(selectedTypes.filter(type => type !== typeToRemove));
-    };    
+    };
 
+    // Function to handle input change in the search input field
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
         setSearchFilter(event.target.value);
     };
 
+    // Function to clear the search input field
     const clearInput = () => {
         setInputValue('');
         setSearchFilter('');

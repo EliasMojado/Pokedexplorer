@@ -1,23 +1,30 @@
 import { useState, useEffect } from 'react';
 import { typeColorsMap } from '../constants';
 
+/**
+ * Card component represents a single Pokémon card.
+ * @param {Object} props - Component props.
+ * @param {number} props.id_number - The ID number of the Pokémon.
+ * @param {string} props.name - The name of the Pokémon.
+ * @param {string} props.photo - The URL of the Pokémon's photo.
+ * @param {string[]} props.types - An array of types associated with the Pokémon.
+ * @param {Function} props.toggleInfoPane - Function to toggle the info pane for the card.
+ */
 export default function Card({ id_number, name, photo, types, toggleInfoPane}) {
     const [isLoading, setIsLoading] = useState(true);
 
+     /**
+     * Function to handle image load event and update isLoading state.
+     */
     const handleImageLoad = () => {
         setIsLoading(false);
     };
 
-    useEffect(() => {
-        const bgColor = combineColors(types);
-    
-        const typeDiv = document.getElementById(`type-${id_number}`);
-        if (typeDiv) {
-            typeDiv.style.backgroundColor = bgColor;
-        }
-    }, [types]);
-    
-
+    /**
+     * Function to combine colors based on Pokémon types.
+     * @param {string[]} types - An array of types associated with the Pokémon.
+     * @returns {string} Combined hexadecimal color value.
+     */
     const combineColors = (types) => {
         let color1 = "#FFFFFF"; // Default color
         let color2 = "#FFFFFF"; // Default color
@@ -31,7 +38,13 @@ export default function Card({ id_number, name, photo, types, toggleInfoPane}) {
     
         return mixColors(color1, color2);
     };
-    
+
+    /**
+     * Function to mix two hexadecimal colors and return the average color.
+     * @param {string} color1 - The first hexadecimal color value.
+     * @param {string} color2 - The second hexadecimal color value.
+     * @returns {string} Average hexadecimal color value.
+     */
     const mixColors = (color1, color2) => {
         // Convert hex colors to RGB components
         const r1 = parseInt(color1.substring(1, 3), 16);
@@ -52,7 +65,15 @@ export default function Card({ id_number, name, photo, types, toggleInfoPane}) {
         
         return avgColor;
     };
-    
+
+    useEffect(() => {
+        // Combine colors based on types and update the background color of the type div.
+        const bgColor = combineColors(types);
+        const typeDiv = document.getElementById(`type-${id_number}`);
+        if (typeDiv) {
+            typeDiv.style.backgroundColor = bgColor;
+        }
+    }, [types]);    
 
     return (
         <div className={`relative flex flex-col items-center w-[15vw] h-[43vh] bg-[#EEF2F3] rounded-xl transition duration-300 ease-in-out transform hover:shadow-lg hover:border-2 hover:border-gray-400`} onClick={() => toggleInfoPane()}>

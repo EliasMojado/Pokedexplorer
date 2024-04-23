@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { typeColorsMap, strengthsArray, resistanceArray, weaknessesArray } from '../constants';
 import Image from 'next/image';
 
+// Maybe I should have exported this function so i can reuse it
 const combineColors = (types) => {
     let color1 = "#FFFFFF"; // Default color
     let color2 = "#FFFFFF"; // Default color
@@ -37,6 +38,14 @@ const mixColors = (color1, color2) => {
     return avgColor;
 };
 
+/**
+ * Component representing a bar for displaying a statistical value.
+ * @param {Object} props - The properties passed to the StatBar component.
+ * @param {number} props.value - The current value of the statistic.
+ * @param {number} props.max - The maximum value of the statistic.
+ * @param {string} props.color - The color of the bar representing the statistic.
+ * @returns {JSX.Element} The JSX element representing the StatBar component.
+ */
 const StatBar = ({ value, max, color }) => {
     const percentage = (value / max) * 100;
 
@@ -48,6 +57,11 @@ const StatBar = ({ value, max, color }) => {
     );
 };
 
+/**
+ * Retrieves the weaknesses of a Pokémon based on its types.
+ * @param {string[]} types - An array containing the types of the Pokémon.
+ * @returns {string[]} An array containing the weaknesses of the Pokémon.
+ */
 function getWeaknesses(types) {
     const weaknesses = types.flatMap(type => weaknessesArray[type.toLowerCase()] || []);
     const resistance = types.flatMap(type => resistanceArray[type.toLowerCase()] || []);
@@ -58,11 +72,22 @@ function getWeaknesses(types) {
     return Array.from(new Set(result));
 }
 
+/**
+ * Retrieves the strengths of a Pokémon based on its types.
+ * @param {string[]} types - An array containing the types of the Pokémon.
+ * @returns {string[]} An array containing the strengths of the Pokémon.
+ */
 function getStrengths(types) {
     const strengths = types.flatMap(type => strengthsArray[type.toLowerCase()] || []);
     return Array.from(new Set(strengths));
 }
 
+
+/**
+ * Retrieves the image source for a given Pokémon type.
+ * @param {string} type - The type of the Pokémon.
+ * @returns {string} The image source for the Pokémon type.
+ */
 function getTypeImageSrc(type) {
     switch (type) {
         case 'normal':
@@ -106,6 +131,15 @@ function getTypeImageSrc(type) {
     }
 }
 
+/**
+ * Component for displaying detailed information about a Pokémon.
+ * Renders information such as name, types, description, stats, weaknesses, and strengths.
+ * @param {Object} props - The properties passed to the InfoPane component.
+ * @param {function} props.togglePane - Function to toggle the visibility of the InfoPane.
+ * @param {Object} props.content - The content (Pokémon data) to display in the InfoPane.
+ * @param {function} props.setContent - Function to set the content (Pokémon data) to display in the InfoPane.
+ * @returns {JSX.Element} The JSX element representing the InfoPane component.
+ */
 export default function InfoPane({ togglePane, content, setContent}) {
     const [isOpen, setIsOpen] = useState(true);
     const [themeColor, setThemeColor] = useState("#FFFFFF");
@@ -117,21 +151,37 @@ export default function InfoPane({ togglePane, content, setContent}) {
     const [weaknesses, setWeaknesses] = useState([]);
     const [strengths, setStrengths] = useState([]);
 
+    /**
+     * Handler for image load event.
+     * Sets isLoading state to false.
+     */
     const handleImageLoad = () => {
         setIsLoading(false);
     };
 
+    /**
+     * Closes the InfoPane.
+     */
     const closePane = () => {
         setIsOpen(false);
         togglePane();
     };
 
+    /**
+     * Navigates to the next or previous Pokémon.
+     * @param {boolean} isNext - Indicates whether to navigate to the next Pokémon (true) or previous Pokémon (false).
+     */
     const navigatePokemon = async (isNext) => {
         const currentId = content.id;
         const nextId = isNext ? currentId + 1 : currentId - 1;
         setContent(nextId);
     };
 
+
+    /**
+     * Fetches description of the Pokémon.
+     * https://pokeapi.co/api/v2/pokemon-species/${content.id}
+     */
     const fetchDescription = async () => {
         try {
             setIsDescriptionLoading(true);
@@ -156,7 +206,11 @@ export default function InfoPane({ togglePane, content, setContent}) {
             setIsDescriptionLoading(false);
         }
     };
-
+    
+     /**
+     * Fetches stats of the Pokémon.
+     * https://pokeapi.co/api/v2/pokemon/${content.id}
+     */
     const fetchStats = async () => {
         try {
             const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${content.id}`);

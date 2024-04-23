@@ -1,15 +1,27 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
+/**
+ * Component for rendering a sorting and filtering pane.
+ * @param {Object} props - The properties passed to the SortPane component.
+ * @param {Function} props.togglePane - Function to toggle the visibility of the pane.
+ * @param {boolean} props.isNumeric - Boolean indicating whether the sorting is already numeric (by ID) or alphabetical (by name).
+ * @param {Function} props.toggleIsNumeric - Function to toggle the sorting type between numeric and alphabetical.
+ * @param {Array} props.Types - Array containing the already selected Pokémon types.
+ * @param {Function} props.setTypes - Function to set the selected Pokémon types.
+ * @returns {JSX.Element} The JSX element representing the SortPane component.
+ */
 export default function SortPane({ togglePane, isNumeric, toggleIsNumeric, Types, setTypes }) {
     const [selectedTypes, setSelectedTypes] = useState([]);
     const [sortByID, setSelectedSort] = useState(isNumeric);
     const [errorMessage, setErrorMessage] = useState("");
-
+    
+    // Function to close the pane
     const closePane = () => {
         togglePane();
     };
 
+    // Function to handle click on a Pokémon type
     const handleTypeClick = (type) => {
         if (selectedTypes.includes(type)) {
             setSelectedTypes(selectedTypes.filter((selectedType) => selectedType !== type));
@@ -23,14 +35,17 @@ export default function SortPane({ togglePane, isNumeric, toggleIsNumeric, Types
         }
     };
 
+    // Function to check if a type is selected
     const isTypeSelected = (type) => {
         return selectedTypes.includes(type);
     };
 
+    // Function to handle changing the sorting option
     const handleOptionChange = () => {
         setSelectedSort(!sortByID); // Update the selected sorting option
     };
 
+    // Function to apply the selected changes
     const applyChanges = () => {
         toggleIsNumeric(sortByID);
         setTypes(selectedTypes); // Update the types
@@ -38,6 +53,7 @@ export default function SortPane({ togglePane, isNumeric, toggleIsNumeric, Types
         togglePane();
     };
     
+    // Effect to initialize the selected types when Types prop changes
     useEffect(() => {
         setSelectedTypes([...Types.flat().slice(0, 2)]); // Only select the first 2 types
     }, [Types]);

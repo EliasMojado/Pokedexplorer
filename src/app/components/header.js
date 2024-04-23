@@ -3,14 +3,20 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+
+/**
+ * Header component for the Pokédexplorer application.
+ * Renders a visually appealing header section with animations and information about the application.
+ */
 export default function Header(){
+    // State variable to manage animation
     const [animate, setAnimate] = useState(false);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
             setAnimate(true);
         }, 100);
-
+        // Cleanup function to clear the timeout
         return () => clearTimeout(timeout);
     }, []);
 
@@ -38,6 +44,7 @@ export default function Header(){
                 className="w-[20vw] absolute top-[38vh] left-[19vw] z-10 pr-[5vw]"
             />
 
+            {/* this gives the cool mask effect. Goes from right to left with the ball and colors change to match the gradiency of the real background */}
             <div className={`absolute z-20 top-0 h-full w-[100vw] 
                 ${animate ? 'bg-[#F8E580] transition-left duration-1000 ease-in-out left-[-100vw]' : 'bg-[#F7D933] transition-left duration-1000 ease-in-out left-[0vw]'}`} />
 
