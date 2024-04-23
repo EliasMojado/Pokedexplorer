@@ -3,17 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Card from "./card";
 import InfoPane from './infopane';
 
-
-/**
- * Component for displaying a list of Pokémon cards with filtering and pagination.
- * @param {Object} props - The properties passed to the List component.
- * @param {string} props.searchFilter - The search filter for filtering Pokémon by name
- * @param {boolean} props.isNumeric - A boolean indicating whether the sorting should be numeric (by ID) or alphabetical (by name).
- * @param {string[]} props.selectedTypes - An array containing the selected Pokémon types for filtering.
- * @returns {JSX.Element} The JSX element representing the List component.
- */
 export default function List({searchFilter, isNumeric, selectedTypes}) {
-     // State variables
     const [allPokemonData, setAllPokemonData] = useState([]);
     const [detailedPokemonData, setDetailedPokemonData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -22,18 +12,14 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
     const [selectedCard, setSelectedCard] = useState(null);
     const [loadMore, setLoadMore] = useState(false);
 
-     // Function to toggle the info pane for a selected Pokémon
     const toggleInfoPane = (pokemon) => {
         setSelectedCard(pokemon)
     };
 
-    // Function to close the info pane. This gets passed to the infopane.
     const closeInfoPane = () => {
         setSelectedCard(null);
     };
 
-    // Function to fetch Pokémon data by ID
-    // API: https://pokeapi.co/api/v2/pokemon/${id}
     const setContent = async (id) => {
         if(id < 1 || id > 1025) return;
 
@@ -46,7 +32,6 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
             const updatedPokemon = {
                 id: data.id,
                 name: data.name,
-                // Concatenate the 3 number id to the asset address
                 photo: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${String(data.id).padStart(3, '0')}.png`,
                 types: data.types.map(type => type.type.name),
             };
@@ -57,7 +42,6 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         }
     };
 
-    // Function to fetch all Pokémon data. Done only once
     const fetchAllPokemonData = async () => {
         setIsLoading(true);
         try {
@@ -87,7 +71,6 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         }
     };
 
-    // Function to fetch initial Pokémon data
     const initialFetch = async () => {
         setIsLoading(true);
         try {
@@ -122,7 +105,6 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         }
     }
 
-    // Function to fetch more Pokémon data. But doesnt actually fetch, just slices the fetched data. 
     const fetchMoreData = async () => {
         setIsLoading(true);
         try {
@@ -139,7 +121,6 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         }
     };
 
-    // Function to apply search and type filters, and sorting
     const applyFilters = () => {
         // Apply search filter
         let filteredData = allPokemonData.filter(pokemon =>
@@ -169,13 +150,11 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         return filteredData;
     };
 
-    // Function to apply search and type filters, and sorting
     useEffect(() => {
         initialFetch();
         fetchAllPokemonData();
     }, []);
 
-    // Update detailed Pokémon data when searchFilter or selectedTypes change
     useEffect(() => {
         setPage(1); // Reset the page number when searchFilter or selectedTypes change
         setDetailedPokemonData([]);
@@ -195,7 +174,7 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         }
     }, [searchFilter, selectedTypes, isNumeric]);
     
-    // Add loading when scrolling
+
     useEffect(() => {
         let timeoutId;
 
@@ -224,7 +203,6 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         };
     }, [isLoading, page]);
 
-    // When the header is out of sight, add padding to the top of the list
     useEffect(() => {
         const handleScroll = () => {
             const header = document.getElementById('HEADER');
@@ -249,11 +227,11 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         };
     }, []);
 
-    // Handle Load More button click (required)
-    const handleLoadMore = () => {
-        setLoadMore(true);
-        fetchMoreData();
-    };
+    // const handleLoadMore = () => {
+    //     setLoadMore(true);
+    //     fetchMoreData();
+    //     console.log(loadMore); // still false
+    // };
 
     return (
         <div>
@@ -275,13 +253,13 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
                 </div>
             </div>
 
-            {!loadMore && (
+            {/* {!loadMore && (
                 <div className='flex flex-row justify-center items-center my-[5vh] h-[5vh] mx-[10vw]'>
                     <button onClick={handleLoadMore} className='w-[10vw] h-full rounded-full bg-red-500'>Load more?</button>
                 </div>
-            )}
+            )} */}
 
-            {searchFilter === "" && loadMore && page <= 102 && (
+            {searchFilter === "" && page <= 102 && (
                 <div id="loading" className='flex flex-row justify-center items-center mt-[5vh] h-[5vh] mx-[10vw]'>
                     <div role="status" className='pt-2'>
                         <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
