@@ -3,27 +3,39 @@ import React, { useState, useEffect } from 'react';
 import Card from "./card";
 import InfoPane from './infopane';
 
+/**
+ * Component to display a list of Pokémon cards.
+ * @param {string} searchFilter - The search filter string.
+ * @param {boolean} isNumeric - Flag indicating whether sorting is numeric or alphabetical.
+ * @param {Array} selectedTypes - Array of selected Pokémon types for filtering.
+ * @returns {JSX.Element} - JSX element representing the list of Pokémon cards.
+ */
 export default function List({searchFilter, isNumeric, selectedTypes}) {
+    // State variables
     const [allPokemonData, setAllPokemonData] = useState([]);
     const [detailedPokemonData, setDetailedPokemonData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [isSticky, setIsSticky] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
-    const [loadMore, setLoadMore] = useState(false);
 
+    // Function to open the info pane for a selected Pokémon card
     const toggleInfoPane = (pokemon) => {
         setSelectedCard(pokemon)
     };
 
+    // Reset the selected card to close the info pane
     const closeInfoPane = () => {
         setSelectedCard(null);
     };
-
+    
+    // Function to fetch and set content for a specific Pokémon card
     const setContent = async (id) => {
+        // Check if the ID is within valid range
         if(id < 1 || id > 1025) return;
 
         try {
+            // Fetch Pokémon data by ID
             const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch Pokémon data');
@@ -42,14 +54,18 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         }
     };
 
+    // Function to fetch all Pokémon data
     const fetchAllPokemonData = async () => {
         setIsLoading(true);
         try {
+            // Fetch all Pokémon data from the API
+            // 1025 because it's the max number of Pokémon in the API that has photo 
             const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0`);
             if (!response.ok) {
                 throw new Error('Failed to fetch Pokémon data');
             }
             const data = await response.json();
+            // Process the fetched data and update state
             const newPokemonData = await Promise.all(data.results.map(async ({ name, url }) => {
                 const pokemonResponse = await fetch(url);
                 if (!pokemonResponse.ok) {
@@ -71,6 +87,7 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         }
     };
 
+    // Function to initially fetch Pokémon data
     const initialFetch = async () => {
         setIsLoading(true);
         try {
@@ -104,8 +121,12 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
             setIsLoading(false);
         }
     }
-
+    
+    // Function to fetch more Pokémon data
+    // This function is called when the user scrolls to the bottom of the page
+    // not really fetching more data, just slicing the data from allPokemonData
     const fetchMoreData = async () => {
+        console.log("this gets called: ", page);
         setIsLoading(true);
         try {
             setDetailedPokemonData([]);
@@ -121,6 +142,7 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         }
     };
 
+    // Function to apply search and type filters
     const applyFilters = () => {
         // Apply search filter
         let filteredData = allPokemonData.filter(pokemon =>
@@ -174,7 +196,6 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         }
     }, [searchFilter, selectedTypes, isNumeric]);
     
-
     useEffect(() => {
         let timeoutId;
 
@@ -182,6 +203,8 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
             return;
         }
 
+        // Function to handle scroll event
+        // attached to the window object
         const handleScroll = () => {
             const loadingDiv = document.getElementById('loading');
             if (!loadingDiv || isLoading) return;
@@ -203,6 +226,7 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         };
     }, [isLoading, page]);
 
+    // Add padding to the top of the list when the header is sticky
     useEffect(() => {
         const handleScroll = () => {
             const header = document.getElementById('HEADER');
@@ -227,12 +251,6 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
         };
     }, []);
 
-    // const handleLoadMore = () => {
-    //     setLoadMore(true);
-    //     fetchMoreData();
-    //     console.log(loadMore); // still false
-    // };
-
     return (
         <div>
             {selectedCard && <InfoPane togglePane={closeInfoPane} content={selectedCard} setContent={setContent} />}
@@ -252,12 +270,6 @@ export default function List({searchFilter, isNumeric, selectedTypes}) {
                     ))}
                 </div>
             </div>
-
-            {/* {!loadMore && (
-                <div className='flex flex-row justify-center items-center my-[5vh] h-[5vh] mx-[10vw]'>
-                    <button onClick={handleLoadMore} className='w-[10vw] h-full rounded-full bg-red-500'>Load more?</button>
-                </div>
-            )} */}
 
             {searchFilter === "" && page <= 102 && (
                 <div id="loading" className='flex flex-row justify-center items-center mt-[5vh] h-[5vh] mx-[10vw]'>
